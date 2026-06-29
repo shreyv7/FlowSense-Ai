@@ -83,6 +83,15 @@ const MOCK_POLICY_PDFS: Record<string, PDFDocumentPage[]> = {
       content: "Pradhan Mantri MUDRA Yojana (PMMY) is a flagship government scheme that facilitates subsidized credit up to ₹10 Lakhs to non-corporate, non-farm small and micro enterprises. These loans are classified into three distinct categories based on growth phase and funding requirements:\n\n1. SHISHU: Covering loan requirements up to ₹50,000.\n2. KISHOR: Covering loan requirements from ₹50,000 up to ₹5 Lakhs.\n3. TARUN: Covering loan requirements from ₹5 Lakhs up to ₹10 Lakhs.",
       key_points: ["Maximum loan quantum: ₹10 Lakhs", "Shishu Category: Loans up to ₹50,000", "Kishor Category: Loans ₹50,000 to ₹5 Lakhs", "Tarun Category: Loans ₹5 Lakhs to ₹10 Lakhs", "Zero collateral required for all categories"]
     }
+  ],
+  "Maharashtra_Fintech_Guidelines.pdf": [
+    {
+      document_name: "Maharashtra_Fintech_Guidelines.pdf",
+      page_number: 3,
+      title: "Section 5.1: Fiscal Incentives for Fintech Startups",
+      content: "The Government of Maharashtra, through the Maharashtra State Innovation Society (MSINS), provides robust support to registered FinTech startups. Startups operating in the fintech space qualify for: 1. Co-working & Incubation Subsidy: Reimbursement of incubator rent up to ₹1 Lakh per year for up to 3 years. 2. State GST (SGST) Reimbursement: 100% reimbursement of the SGST paid on commercial services for 3 years (capped at ₹10 Lakhs per year). 3. Travel & Exhibition Grant: Up to ₹2 Lakhs per startup for participating in national/international fintech conferences.",
+      key_points: ["100% SGST Reimbursement for 3 years (up to ₹10 Lakhs/yr)", "Co-working rental subsidy up to ₹1 Lakh/yr", "Travel & exhibition grants up to ₹2 Lakhs"]
+    }
   ]
 };
 
@@ -103,6 +112,11 @@ const PRESET_PROFILES = [
     label: "Karnataka IT Startup",
     icon: "🏢",
     query: "I run a ₹2 Crore turnover IT services firm in Karnataka. What state tech subsidies can I claim?"
+  },
+  {
+    label: "Maharashtra Fintech",
+    icon: "🚀",
+    query: "I run a fintech startup in Mumbai registered under Maharashtra's state cell. What incentives do we get?"
   },
   {
     label: "Collateral-free CGTMSE Loan",
@@ -246,6 +260,10 @@ export default function App() {
           answer = "According to the official **Karnataka IT Policy Guidelines (Section 4.2)**, as an IT services firm registered in Karnataka with a turnover under ₹2 Crore, you are eligible for the following state incentives:\n\n1. **Capital Investment Subsidy:** A 10% direct capital investment subsidy on your qualifying technical infrastructure and capital assets, capped at a maximum of **₹25 Lakhs**.\n2. **Patent Costs Reimbursement:** Up to **₹5 Lakhs** reimbursement for legal and filing costs associated with obtaining national or international patents.\n3. **EPF Reimbursement:** Startup entities can claim a **100% PF reimbursement** for female employees for the first three years.";
           citations = [{ document_name: "Karnataka_IT_Policy_Guidelines.pdf", page_number: 14 }];
         } 
+        else if (normalizedQuery.includes("maharashtra") || normalizedQuery.includes("fintech") || normalizedQuery.includes("mumbai")) {
+          answer = "Based on the official **Maharashtra FinTech Policy Guidelines (Section 5.1)**, eligible FinTech startups registered under Maharashtra State Innovation Society (MSINS) and operating out of Mumbai or elsewhere in Maharashtra qualify for:\n\n1. **State GST (SGST) Reimbursement:** 100% reimbursement of the SGST paid on commercial services for 3 years, capped at **₹10 Lakhs** per fiscal year.\n2. **Co-working & Incubation Subsidy:** Reimbursement of incubator desk rent or co-working rental fees up to **₹1 Lakh per year** for up to 3 years.\n3. **Travel & Exhibition Grant:** Direct grants of up to **₹2 Lakhs** to reimburse registrations, booths, or travel expenses for showcasing products at elite national or international fintech summits.";
+          citations = [{ document_name: "Maharashtra_Fintech_Guidelines.pdf", page_number: 3 }];
+        }
         else if (normalizedQuery.includes("cgtmse") || normalizedQuery.includes("guarantee") || normalizedQuery.includes("collateral")) {
           answer = "Based on the official **CGTMSE Guidelines 2026**, for a loan quantum of ₹3 Crore to expand an engineering workshop, the following framework applies:\n\n1. **Guarantee Limit Enhancement:** Effective for 2026, the maximum credit ceiling under CGTMSE has been raised to **₹5 Crore (₹500 Lakhs)**, making your ₹3 Crore collateral-free requirement fully eligible.\n2. **Guarantee Cover:** Since your amount is above ₹2 Crore, you qualify for a standard guarantee cover of **75%** on the outstanding default amount. Women-led enterprises and North-East business units benefit from premium concessions and extended guarantee coverage of up to 85%.";
           citations = [
@@ -627,6 +645,22 @@ export default function App() {
                       <div>
                         <div className="font-bold text-[#1E3025]">Karnataka IT Policy 2020-25</div>
                         <div className="text-[10px] text-gray-500">Official State Digital Portal</div>
+                      </div>
+                    </div>
+                    <ExternalLink className="h-3.5 w-3.5 text-[#15803D]" />
+                  </a>
+
+                  <a 
+                    href="https://fintech.maharashtra.gov.in" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-2.5 bg-white hover:bg-gray-50 rounded-xl border border-[#D5E6DC] transition-all text-[11px] shadow-sm cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🚀</span>
+                      <div>
+                        <div className="font-bold text-[#1E3025]">Maharashtra FinTech Policy</div>
+                        <div className="text-[10px] text-gray-500">Maharashtra State Innovation Society (MSINS)</div>
                       </div>
                     </div>
                     <ExternalLink className="h-3.5 w-3.5 text-[#15803D]" />
