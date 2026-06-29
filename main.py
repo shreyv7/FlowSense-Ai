@@ -46,7 +46,8 @@ if GEMINI_API_KEY:
 
 # Constants
 COLLECTION_NAME = "msme_schemes"
-EMBED_MODEL = "models/text-embedding-004"
+EMBED_MODEL = "models/gemini-embedding-2"
+VECTOR_DIMENSION = 768
 LLM_MODEL = "gemini-1.5-flash"  # Highly optimized for speed, precision, and structured JSON output
 
 # FastAPI Initialization
@@ -149,7 +150,8 @@ class LyzrSchemeNavigatorAgent:
             response = genai.embed_content(
                 model=EMBED_MODEL,
                 content=query_text,
-                task_type="retrieval_query"
+                task_type="retrieval_query",
+                output_dimensionality=VECTOR_DIMENSION
             )
             query_vector = response["embedding"]
             

@@ -49,7 +49,7 @@ qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
 # Constants
 COLLECTION_NAME = "msme_schemes"
-EMBED_MODEL = "models/text-embedding-004"  # 768-dimensional high-quality embedding model
+EMBED_MODEL = "models/gemini-embedding-2"  # 768-dimensional high-quality embedding model
 VECTOR_DIMENSION = 768
 
 
@@ -82,7 +82,8 @@ def generate_embedding(text: str) -> list:
         response = genai.embed_content(
             model=EMBED_MODEL,
             content=text,
-            task_type="retrieval_document"
+            task_type="retrieval_document",
+            output_dimensionality=VECTOR_DIMENSION
         )
         return response["embedding"]
     except Exception as e:
