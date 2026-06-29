@@ -1,0 +1,6 @@
+{
+  "name": "FlowSense Scheme Navigator",
+  "description": "An AI-native financial and compliance copilot for Indian MSMEs to discover government subsidies and loans with verifiable citations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
