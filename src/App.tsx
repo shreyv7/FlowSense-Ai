@@ -132,7 +132,7 @@ const PRESET_PROFILES = [
 
 export default function App() {
   const [backendUrl, setBackendUrl] = useState(
-    typeof window !== "undefined" ? (import.meta.env.VITE_BACKEND_URL || window.location.origin) : ""
+    typeof window !== "undefined" ? window.location.origin : ""
   );
   const [isLiveMode, setIsLiveMode] = useState(true);
   const [inputQuery, setInputQuery] = useState("");
@@ -182,6 +182,44 @@ export default function App() {
 
   // Document/PDF Viewer state
   const [viewingDoc, setViewingDoc] = useState<PDFDocumentPage>(DEFAULT_DOC_PAGE);
+
+  // Aesthetic Custom Cursor State & Hook
+  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
+  const [isHoveringPointer, setIsHoveringPointer] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+      const isPointer = 
+        window.getComputedStyle(target).cursor === "pointer" || 
+        target.tagName === "BUTTON" || 
+        target.tagName === "A" || 
+        target.closest("button") || 
+        target.closest("a");
+      setIsHoveringPointer(!!isPointer);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseover", handleMouseOver);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseover", handleMouseOver);
+    };
+  }, []);
 
   // Trigger RAG reasoning (Simulated or Live REST API call)
   const handleSendQuery = async (queryText: string) => {
@@ -308,7 +346,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7F5] text-slate-800 font-sans antialiased flex flex-col">
+    <div className="h-screen max-h-screen bg-[#F4F7F5] text-slate-800 font-sans antialiased flex flex-col overflow-hidden custom-cursor-active">
       {/* ==============================================================================
           NAVIGATION HEADER
           ============================================================================== */}
@@ -401,7 +439,7 @@ export default function App() {
       {/* ==============================================================================
           MAIN CONTENT VIEWPORT
           ============================================================================== */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-5">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-5 overflow-hidden min-h-0">
         
         {/* Settings Panel Drawer */}
         <AnimatePresence>
@@ -438,7 +476,7 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
           
           {/* LEFT PANE: Chat Interface (Active Cognitive Discovery Room) */}
-          <div className="lg:col-span-7 bg-white rounded-3xl border border-[#E3ECE6] shadow-md flex flex-col h-[650px] overflow-hidden">
+          <div className="lg:col-span-7 bg-white rounded-3xl border border-[#E3ECE6] shadow-md flex flex-col h-full min-h-0 overflow-hidden">
             <div className="bg-[#FAFBFB] px-6 py-4 border-b border-[#E3ECE6]/80 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <Bot className="h-5 w-5 text-[#15803D]" />
@@ -558,7 +596,7 @@ export default function App() {
           </div>
 
           {/* RIGHT PANE: Document/PDF Viewer Highlighted Context */}
-          <div className="lg:col-span-5 bg-white rounded-3xl border border-[#E3ECE6] shadow-md flex flex-col h-[650px] overflow-hidden">
+          <div className="lg:col-span-5 bg-white rounded-3xl border border-[#E3ECE6] shadow-md flex flex-col h-full min-h-0 overflow-hidden">
             <div className="bg-[#FAFBFB] px-6 py-4 border-b border-[#E3ECE6]/80 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <FileText className="h-5 w-5 text-blue-600" />
@@ -731,6 +769,30 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {!isMobile && (
+        <>
+          <div 
+            className="fixed pointer-events-none z-[9999] rounded-full bg-[#15803D] transition-transform duration-75 ease-out -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: `${mousePos.x}px`,
+              top: `${mousePos.y}px`,
+              width: isHoveringPointer ? '8px' : '6px',
+              height: isHoveringPointer ? '8px' : '6px',
+            }}
+          />
+          <div 
+            className="fixed pointer-events-none z-[9998] rounded-full border border-[#15803D]/60 transition-all duration-300 ease-out -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: `${mousePos.x}px`,
+              top: `${mousePos.y}px`,
+              width: isHoveringPointer ? '44px' : '24px',
+              height: isHoveringPointer ? '44px' : '24px',
+              backgroundColor: isHoveringPointer ? 'rgba(21, 128, 61, 0.05)' : 'transparent',
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }

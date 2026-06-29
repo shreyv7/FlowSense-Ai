@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+@media (min-width: 769px) {
+  .custom-cursor-active, 
+  .custom-cursor-active * {
+    cursor: none !important;
+  }
+  .custom-cursor-active input,
+  .custom-cursor-active textarea {
+    cursor: text !important;
+  }
+}
