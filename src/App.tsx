@@ -132,7 +132,7 @@ const PRESET_PROFILES = [
 
 export default function App() {
   const [backendUrl, setBackendUrl] = useState(
-    typeof window !== "undefined" ? window.location.origin : ""
+    typeof window !== "undefined" ? (import.meta.env.VITE_BACKEND_URL || window.location.origin) : ""
   );
   const [isLiveMode, setIsLiveMode] = useState(true);
   const [inputQuery, setInputQuery] = useState("");
