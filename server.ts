@@ -129,6 +129,10 @@ async function startServer() {
     });
   });
 
+  app.get("/ping", (req, res) => {
+    res.status(200).send("pong");
+  });
+
   app.post("/api/chat", async (req, res) => {
     const { message, session_id } = req.body;
     console.log(`Received query: "${message}" (Session: ${session_id || "N/A"})`);
