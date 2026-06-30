@@ -13,7 +13,9 @@ import {
   Bot,
   User,
   ShieldCheck,
-  Building
+  Building,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -139,6 +141,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [chatSessionId, setChatSessionId] = useState(`session_${Math.random().toString(36).substring(7)}`);
+  const [isHeaderMinimized, setIsHeaderMinimized] = useState(false);
+  const [activeMobileTab, setActiveMobileTab] = useState<"chat" | "document">("chat");
 
   interface HealthStatus {
     status: string;
@@ -190,7 +194,7 @@ export default function App() {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+      setIsMobile(window.matchMedia("(max-width: 1023px)").matches);
     };
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -341,6 +345,9 @@ export default function App() {
       const page = doc.find(p => p.page_number === citation.page_number);
       if (page) {
         setViewingDoc(page);
+        if (isMobile) {
+          setActiveMobileTab("document");
+        }
       }
     }
   };
@@ -350,89 +357,137 @@ export default function App() {
       {/* ==============================================================================
           NAVIGATION HEADER
           ============================================================================== */}
-      <header className="bg-white border-b border-[#E3ECE6]/80 sticky top-0 z-40 px-6 py-4 shadow-sm">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="p-3 bg-[#E8F5EE] rounded-2xl border border-[#CDE5D8]">
-              <ShieldCheck className="h-6 w-6 text-[#15803D]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold tracking-tight text-[#1E3025]">FlowSense Scheme Navigator</h1>
-                <span className="px-2.5 py-0.5 bg-[#E2EAF4] text-[#1E40AF] text-[10px] font-bold rounded-full border border-[#BFDBFE]">
-                  B2B Regulatory RAG
-                </span>
+      <header className={`bg-white border-b border-[#E3ECE6]/80 sticky top-0 z-40 px-6 transition-all duration-300 shadow-sm ${
+        isHeaderMinimized ? "py-2" : "py-4"
+      }`}>
+        <div className={`max-w-7xl mx-auto flex ${isHeaderMinimized ? "flex-row items-center justify-between" : "flex-col md:flex-row md:items-center justify-between"} gap-4`}>
+          <div className="flex items-center justify-between w-full md:w-auto gap-3.5">
+            <div className="flex items-center gap-3.5">
+              <div className={`bg-[#E8F5EE] rounded-2xl border border-[#CDE5D8] transition-all duration-300 ${
+                isHeaderMinimized ? "p-2" : "p-3"
+              }`}>
+                <ShieldCheck className={`text-[#15803D] transition-all duration-300 ${
+                  isHeaderMinimized ? "h-4 w-4" : "h-6 w-6"
+                }`} />
               </div>
-              <p className="text-xs text-[#5D7265] mt-0.5">Government Schemes & Subsidies Verification Platform</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Status indicators */}
-            <div className="flex gap-2 mr-2">
-              {health ? (
-                <>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold border ${
-                    health.integrations.gemini_api_configured 
-                      ? "bg-[#E8F5EE] text-[#15803D] border-[#CDE5D8]" 
-                      : "bg-red-50 text-red-600 border-red-200"
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className={`font-extrabold tracking-tight text-[#1E3025] transition-all duration-300 ${
+                    isHeaderMinimized ? "text-sm md:text-base" : "text-xl"
                   }`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${health.integrations.gemini_api_configured ? "bg-[#15803D]" : "bg-red-500"}`}></span>
-                    Gemini API: {health.integrations.gemini_api_configured ? "Active" : "Key Missing"}
-                  </span>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold border ${
-                    health.integrations.qdrant_cloud_configured 
-                      ? "bg-[#EFF6FF] text-blue-600 border-[#BFDBFE]" 
-                      : "bg-[#FFFBEB] text-amber-700 border-[#FDE68A]"
-                  }`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${health.integrations.qdrant_cloud_configured ? "bg-blue-500" : "bg-amber-500 animate-pulse"}`}></span>
-                    Qdrant: {health.integrations.qdrant_cloud_configured ? "Connected" : "Local Fallback"}
-                  </span>
-                </>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-gray-50 text-gray-500 border border-gray-200">
-                  <span className="h-1.5 w-1.5 rounded-full bg-gray-300 animate-pulse"></span>
-                  Checking Service...
-                </span>
-              )}
+                    {isMobile && isHeaderMinimized ? "FlowSense" : "FlowSense Scheme Navigator"}
+                  </h1>
+                  {!isHeaderMinimized && (
+                    <span className="px-2.5 py-0.5 bg-[#E2EAF4] text-[#1E40AF] text-[10px] font-bold rounded-full border border-[#BFDBFE]">
+                      B2B Regulatory RAG
+                    </span>
+                  )}
+                </div>
+                {!isHeaderMinimized && (
+                  <p className="text-xs text-[#5D7265] mt-0.5">Government Schemes & Subsidies Verification Platform</p>
+                )}
+              </div>
             </div>
 
-            {/* Mode Toggle & Settings Icon */}
-            <div className="flex items-center gap-1.5 bg-[#F1F5F2] rounded-xl p-1 border border-[#E3ECE6]">
-              <button 
-                onClick={() => setIsLiveMode(false)}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                  !isLiveMode 
-                    ? "bg-white text-[#15803D] shadow-sm border border-gray-100" 
-                    : "text-[#5D7265] hover:text-[#1E3025]"
-                }`}
-              >
-                Simulation
-              </button>
-              <button 
-                onClick={() => setIsLiveMode(true)}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
-                  isLiveMode 
-                    ? "bg-[#15803D] text-white shadow-sm" 
-                    : "text-[#5D7265] hover:text-[#1E3025]"
-                }`}
-              >
-                Production Server
-              </button>
-            </div>
-
+            {/* Mobile minimize/maximize button in the top row */}
             <button
-              onClick={() => setShowSettings(!showSettings)}
-              className={`p-2 rounded-xl border transition-all ${
-                showSettings 
-                  ? "bg-[#E8F5EE] border-[#CDE5D8] text-[#15803D]" 
-                  : "bg-white border-[#E3ECE6] hover:bg-[#F8FAF9] text-[#5D7265]"
-              }`}
-              title="Configure Endpoint URL"
+              onClick={() => setIsHeaderMinimized(!isHeaderMinimized)}
+              className="md:hidden p-2 bg-[#F1F5F2] border border-[#E3ECE6] hover:bg-[#E8F5EE] rounded-xl transition-all text-[#5D7265] hover:text-[#1E3025] flex items-center justify-center cursor-pointer shadow-xs"
+              title={isHeaderMinimized ? "Expand Header" : "Minimize Header"}
             >
-              <Sliders className="h-4 w-4" />
+              {isHeaderMinimized ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </button>
           </div>
+
+          {/* Desktop/Expanded Mobile Header Controls */}
+          {!isHeaderMinimized && (
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                {health ? (
+                  <>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold border ${
+                      health.integrations.gemini_api_configured 
+                        ? "bg-[#E8F5EE] text-[#15803D] border-[#CDE5D8]" 
+                        : "bg-red-50 text-red-600 border-red-200"
+                    }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${health.integrations.gemini_api_configured ? "bg-[#15803D]" : "bg-red-500"}`}></span>
+                      Gemini API: {health.integrations.gemini_api_configured ? "Active" : "Key Missing"}
+                    </span>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold border ${
+                      health.integrations.qdrant_cloud_configured 
+                        ? "bg-[#EFF6FF] text-blue-600 border-[#BFDBFE]" 
+                        : "bg-[#FFFBEB] text-amber-700 border-[#FDE68A]"
+                    }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${health.integrations.qdrant_cloud_configured ? "bg-blue-500" : "bg-amber-500 animate-pulse"}`}></span>
+                      Qdrant: {health.integrations.qdrant_cloud_configured ? "Connected" : "Local Fallback"}
+                    </span>
+                  </>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-gray-50 text-gray-500 border border-gray-200">
+                    <span className="h-1.5 w-1.5 rounded-full bg-gray-300 animate-pulse"></span>
+                    Checking Service...
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 bg-[#F1F5F2] rounded-xl p-1 border border-[#E3ECE6]">
+                  <button 
+                    onClick={() => setIsLiveMode(false)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                      !isLiveMode 
+                        ? "bg-white text-[#15803D] shadow-sm border border-gray-100" 
+                        : "text-[#5D7265] hover:text-[#1E3025]"
+                    }`}
+                  >
+                    Simulation
+                  </button>
+                  <button 
+                    onClick={() => setIsLiveMode(true)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                      isLiveMode 
+                        ? "bg-[#15803D] text-white shadow-sm" 
+                        : "text-[#5D7265] hover:text-[#1E3025]"
+                    }`}
+                  >
+                    Production Server
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => setShowSettings(!showSettings)}
+                  className={`p-2 rounded-xl border transition-all ${
+                    showSettings 
+                      ? "bg-[#E8F5EE] border-[#CDE5D8] text-[#15803D]" 
+                      : "bg-white border-[#E3ECE6] hover:bg-[#F8FAF9] text-[#5D7265]"
+                  }`}
+                  title="Configure Endpoint URL"
+                >
+                  <Sliders className="h-4 w-4" />
+                </button>
+
+                {/* Desktop-only minimize button */}
+                <button
+                  onClick={() => setIsHeaderMinimized(true)}
+                  className="hidden md:flex p-2 bg-[#F1F5F2] border border-[#E3ECE6] hover:bg-[#E8F5EE] rounded-xl transition-all text-[#5D7265] hover:text-[#1E3025] items-center justify-center cursor-pointer shadow-xs"
+                  title="Minimize Header"
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Desktop-only expand button when minimized */}
+          {isHeaderMinimized && (
+            <button
+              onClick={() => setIsHeaderMinimized(false)}
+              className="hidden md:flex p-2 bg-[#F1F5F2] border border-[#E3ECE6] hover:bg-[#E8F5EE] rounded-xl transition-all text-[#5D7265] hover:text-[#1E3025] items-center justify-center cursor-pointer shadow-xs"
+              title="Expand Header"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </header>
 
@@ -472,11 +527,48 @@ export default function App() {
           )}
         </AnimatePresence>
 
+        {/* Mobile Tab Switcher */}
+        {isMobile && (
+          <div className="relative flex bg-[#E8ECE9] p-1 rounded-2xl border border-[#D5DCD8]">
+            <motion.div
+              className="absolute top-1 bottom-1 rounded-xl shadow-xs"
+              animate={{
+                left: activeMobileTab === "chat" ? "4px" : "calc(50% + 2px)",
+                backgroundColor: activeMobileTab === "chat" ? "#15803D" : "#2563EB",
+              }}
+              style={{
+                width: "calc(50% - 6px)",
+              }}
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            />
+            <button
+              onClick={() => setActiveMobileTab("chat")}
+              className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-xl transition-colors duration-200 cursor-pointer ${
+                activeMobileTab === "chat" ? "text-white" : "text-[#5D7265] hover:text-[#1E3025]"
+              }`}
+            >
+              <Bot className="h-4 w-4" />
+              Chat Assistant
+            </button>
+            <button
+              onClick={() => setActiveMobileTab("document")}
+              className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold rounded-xl transition-colors duration-200 cursor-pointer ${
+                activeMobileTab === "document" ? "text-white" : "text-[#5D7265] hover:text-[#1E3025]"
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+              Document Auditor
+            </button>
+          </div>
+        )}
+
         {/* Split-pane view */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 min-h-0">
           
           {/* LEFT PANE: Chat Interface (Active Cognitive Discovery Room) */}
-          <div className="lg:col-span-7 bg-white rounded-3xl border border-[#E3ECE6] shadow-md flex flex-col h-full min-h-0 overflow-hidden">
+          <div className={`lg:col-span-7 bg-white rounded-3xl border border-[#E3ECE6] shadow-md h-full min-h-0 overflow-hidden ${
+            isMobile && activeMobileTab !== "chat" ? "hidden" : "flex flex-col"
+          }`}>
             <div className="bg-[#FAFBFB] px-6 py-4 border-b border-[#E3ECE6]/80 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <Bot className="h-5 w-5 text-[#15803D]" />
@@ -596,7 +688,9 @@ export default function App() {
           </div>
 
           {/* RIGHT PANE: Document/PDF Viewer Highlighted Context */}
-          <div className="lg:col-span-5 bg-white rounded-3xl border border-[#E3ECE6] shadow-md flex flex-col h-full min-h-0 overflow-hidden">
+          <div className={`lg:col-span-5 bg-white rounded-3xl border border-[#E3ECE6] shadow-md h-full min-h-0 overflow-hidden ${
+            isMobile && activeMobileTab !== "document" ? "hidden" : "flex flex-col"
+          }`}>
             <div className="bg-[#FAFBFB] px-6 py-4 border-b border-[#E3ECE6]/80 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <FileText className="h-5 w-5 text-blue-600" />
